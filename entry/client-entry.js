@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
-import Index from "./pages/Index";
+import { hydrateRoot } from 'react-dom/client';
+import Index from "../web/pages/Index";
 
-ReactDOM.hydrate(<Index />, document.getElementById("root"));
+hydrateRoot(document.getElementById("root"), <Index />);
