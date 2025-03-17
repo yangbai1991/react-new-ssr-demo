@@ -1,0 +1,16 @@
+{
+  "name": "react-ssr-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --inspect app.js",
+    "build:client": "webpack --config webpack.client.js",
+    "build:server": "webpack --config webpack.server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "webpack": "^5.98.0"
+  }
+}
