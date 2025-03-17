@@ -4,6 +4,8 @@ const express = require("express");
 const webpack = require("webpack");
 const clientConfig = require('./webpack.client')
 const serverConfig = require('./webpack.server')
+// const Html = require("./entry/html");
+// const App = require("./entry/server-app");
 
 const app = express();
 
@@ -16,6 +18,19 @@ app.get("/", async (req, res) => {
   
   res.send(html);
 });
+
+// app.get("/ssr", async (req, res) => {
+//   const { pipe } = renderToPipeableStream(
+//     <Html title="React New SSR Demo">
+//       <App />
+//     </Html>, {
+//     bootstrapScripts: ['/main.js'],
+//     onShellReady() {
+//       res.setHeader('content-type', 'text/html');
+//       pipe(res);
+//     }
+//   });
+// });
 
 const bootstrap = async () => {
   const compiler = webpack([clientConfig, serverConfig]);
