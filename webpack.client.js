@@ -23,21 +23,4 @@ module.exports = merge(commonConfig,{
     }),
     new ProgressBarPlugin(),
   ],
-  // devServer: {
-  //   port: 3001,
-  //   hot: true,
-  //   hotOnly: true,
-  //   disableHostCheck: true,
-  //   // quiet: true,
-  //   publicPath: '/dev-static/',
-  //   historyApiFallback: { disableDotRule: true },
-  //   headers: {
-  //     'Access-Control-Allow-Origin': '*',
-  //     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-  //     'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization',
-  //   },
-  //   // 配置 sockHost 使 whistle 支持热更新
-  //   // 需要在 whistle 添加一条规则 local.panshi.woa.com:7002 http://127.0.0.1:7002
-  //   sockHost: 'local.panshi.woa.com',
-  // },
 });
