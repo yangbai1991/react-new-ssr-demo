@@ -1,6 +1,9 @@
 const path = require('path')
 const { readFileSync } = require("fs");
 const express = require("express");
+const webpack = require("webpack");
+const clientConfig = require('./webpack.client')
+const serverConfig = require('./webpack.server')
 
 const app = express();
 
@@ -14,6 +17,22 @@ app.get("/", async (req, res) => {
   res.send(html);
 });
 
-app.listen(3000, () => {
-  console.log("listening on port 3000");
-});
+const bootstrap = async () => {
+  const compiler = webpack([clientConfig, serverConfig]);
+  const compilerRes = new Promise((resolve, reject) => {
+    compiler.run((err, stats) => {
+      if (err) {
+        return reject(err);
+      }
+      console.log(stats.toString(serverConfig.stats));
+      resolve();
+    });
+    compiler.hooks.done.tap('server-agent', () => console.log('\n构建成功'));
+  });
+  await compilerRes;
+  app.listen(3000, () => {
+    console.log("listening on port 3000");
+  });
+}
+
+bootstrap()
