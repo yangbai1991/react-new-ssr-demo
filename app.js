@@ -4,6 +4,7 @@ const path = require('path')
 const { readFileSync } = require("fs");
 const express = require("express");
 const webpack = require("webpack");
+const ejs = require("ejs");
 const clientConfig = require('./webpack.client')
 const serverConfig = require('./webpack.server')
 // const Html = require("./entry/html").default;
@@ -14,13 +15,20 @@ import App from "./entry/server-app";
 const app = express();
 
 app.use(express.static("dist/web", { extensions: ["js"], index: false }));
+// app.set('view engine', 'ejs');
+app.set('view engine', 'html');
+app.set('view options', { delimiter: '?' });
+app.engine('html', ejs.renderFile);
+// app.engine('.html', ejs.__express)
+app.set('views', path.join(__dirname, 'dist/web/'));
 app.get("/", async (req, res) => {
   const { serverRender } = require(path.resolve(__dirname, "dist/server/server.js"));
   const serverRenderContent = serverRender();
-  const htmlContext = await readFileSync(path.resolve(__dirname, "dist/web/index.html"), { encoding: "utf-8" });
-  const html = htmlContext.toString().replace("ssr-context-placeholder", serverRenderContent);
-  
-  res.send(html);
+  // const htmlContext = await readFileSync(path.resolve(__dirname, "dist/web/index.html"), { encoding: "utf-8" });
+  // const html = htmlContext.toString().replace("ssr-context-placeholder", serverRenderContent);
+
+  // res.send(html);
+  res.render('index', { ssrContextPlaceholder: serverRenderContent });
 });
 
 app.get("/ssr", async (req, res) => {
