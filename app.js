@@ -6,8 +6,10 @@ const express = require("express");
 const webpack = require("webpack");
 const clientConfig = require('./webpack.client')
 const serverConfig = require('./webpack.server')
-const Html = require("./entry/html").default;
-const App = require("./entry/server-app").default;
+// const Html = require("./entry/html").default;
+// const App = require("./entry/server-app").default;
+import Html from "./entry/html";
+import App from "./entry/server-app";
 
 const app = express();
 
