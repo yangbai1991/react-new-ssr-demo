@@ -1,11 +1,13 @@
+const React = require('react');
+const { renderToPipeableStream } = require("react-dom/server");
 const path = require('path')
 const { readFileSync } = require("fs");
 const express = require("express");
 const webpack = require("webpack");
 const clientConfig = require('./webpack.client')
 const serverConfig = require('./webpack.server')
-// const Html = require("./entry/html");
-// const App = require("./entry/server-app");
+const Html = require("./entry/html").default;
+const App = require("./entry/server-app").default;
 
 const app = express();
 
@@ -19,18 +21,20 @@ app.get("/", async (req, res) => {
   res.send(html);
 });
 
-// app.get("/ssr", async (req, res) => {
-//   const { pipe } = renderToPipeableStream(
-//     <Html title="React New SSR Demo">
-//       <App />
-//     </Html>, {
-//     bootstrapScripts: ['/main.js'],
-//     onShellReady() {
-//       res.setHeader('content-type', 'text/html');
-//       pipe(res);
-//     }
-//   });
-// });
+app.get("/ssr", async (req, res) => {
+  const { pipe } = renderToPipeableStream(
+    <Html title="React New SSR Demo">
+      <App />
+    </Html>,
+    {
+      bootstrapScripts: ['/818-39684d1d-client.js'],
+      onShellReady() {
+        res.setHeader('content-type', 'text/html');
+        pipe(res);
+      }
+    }
+  );
+});
 
 const bootstrap = async () => {
   const compiler = webpack([clientConfig, serverConfig]);
