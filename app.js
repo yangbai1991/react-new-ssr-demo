@@ -1,7 +1,8 @@
-const React = require('react');
-const { renderToPipeableStream } = require("react-dom/server");
+// const React = require('react');
+// const { renderToPipeableStream } = require("react-dom/server");
 const path = require('path')
 const { readFileSync } = require("fs");
+const { Transform } = require("stream");
 const express = require("express");
 const webpack = require("webpack");
 const ejs = require("ejs");
@@ -9,8 +10,8 @@ const clientConfig = require('./webpack.client')
 const serverConfig = require('./webpack.server')
 // const Html = require("./entry/html").default;
 // const App = require("./entry/server-app").default;
-import Html from "./entry/html";
-import App from "./entry/server-app";
+// import Html from "./entry/html";
+// import App from "./entry/server-app";
 
 const app = express();
 
@@ -32,18 +33,38 @@ app.get("/", async (req, res) => {
 });
 
 app.get("/ssr", async (req, res) => {
-  const { pipe } = renderToPipeableStream(
-    <Html title="React New SSR Demo">
-      <App />
-    </Html>,
-    {
-      bootstrapScripts: ['/818-39684d1d-client.js'],
-      onShellReady() {
-        res.setHeader('content-type', 'text/html');
-        pipe(res);
-      }
+  const htmlContext = await readFileSync(path.resolve(__dirname, "dist/web/index.html"), { encoding: "utf-8" });
+  const [htmlStart, htmlEnd] = htmlContext.toString().split('<?-ssrContextPlaceholder?>')
+  const { serverStreamRender } = require(path.resolve(__dirname, "dist/server/server.js"));
+  const { pipe } = serverStreamRender({
+    // bootstrapScripts: ['/818-39684d1d-client.js'],
+    onShellReady() {
+      res.setHeader('content-type', 'text/html');
+      const transformStream = new Transform({
+        transform(chunk, encoding, callback) {
+          res.write(chunk, encoding);
+          callback();
+        }
+      });
+      res.write(htmlStart)
+      pipe(transformStream);
+      transformStream.on('finish', () => {
+        res.end(htmlEnd);
+      });
     }
-  );
+  });
+  // const { pipe } = renderToPipeableStream(
+  //   <Html title="React New SSR Demo">
+  //     <App />
+  //   </Html>,
+  //   {
+  //     bootstrapScripts: ['/818-39684d1d-client.js'],
+  //     onShellReady() {
+  //       res.setHeader('content-type', 'text/html');
+  //       pipe(res);
+  //     }
+  //   }
+  // );
 });
 
 const bootstrap = async () => {
